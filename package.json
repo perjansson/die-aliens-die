@@ -2,6 +2,7 @@
 	"name": "die-aliens-die",
 	"version": "0.1.0",
 	"private": true,
+	"homepage": "https://perjansson.github.io/die-aliens-die",
 	"dependencies": {
 		"babel-eslint": "^8.2.2",
 		"eslint-config-airbnb": "^16.1.0",
