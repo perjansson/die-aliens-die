@@ -1,5 +1,5 @@
 import React from 'react'
-import { shape, bool, number, func } from 'prop-types'
+import { shape, bool, number, func, arrayOf } from 'prop-types'
 
 import { gameHeight } from 'utils/constants'
 import Sky from 'components/Sky'
@@ -12,7 +12,12 @@ import Heart from 'components/Heart'
 import StartGame from 'components/StartGame'
 import Title from 'components/Title'
 
-const Canvas = ({ gameState: { started }, startGame, angle, onMouseMove }) => {
+const Canvas = ({
+  gameState: { started, flyingObjects },
+  startGame,
+  angle,
+  onMouseMove,
+}) => {
   const viewBox = [
     window.innerWidth / -2,
     100 - gameHeight,
@@ -37,12 +42,10 @@ const Canvas = ({ gameState: { started }, startGame, angle, onMouseMove }) => {
           <StartGame onClick={startGame} />
         </g>
       )}
-      {started && (
-        <g>
-          <FlyingObject position={{ x: -150, y: -300 }} />
-          <FlyingObject position={{ x: 150, y: -300 }} />
-        </g>
-      )}
+      {started &&
+        flyingObjects.map(({ id, position }) => (
+          <FlyingObject key={id} position={position} />
+        ))}
       <Heart position={{ x: -300, y: 35 }} />
       <Title />
     </svg>
@@ -54,6 +57,15 @@ Canvas.propTypes = {
     started: bool.isRequired,
     kills: number.isRequired,
     lives: number.isRequired,
+    flyingObjects: arrayOf(
+      shape({
+        position: shape({
+          x: number.isRequired,
+          y: number.isRequired,
+        }).isRequired,
+        id: number.isRequired,
+      }),
+    ).isRequired,
   }).isRequired,
   startGame: func.isRequired,
   angle: number.isRequired,

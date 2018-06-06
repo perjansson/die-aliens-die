@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { shape, bool, number, func } from 'prop-types'
+import { shape, bool, number, func, arrayOf } from 'prop-types'
 
 import { getCanvasMousePosition } from 'utils/formulas'
 import Canvas from 'components/Canvas'
@@ -44,6 +44,15 @@ App.propTypes = {
     started: bool.isRequired,
     kills: number.isRequired,
     lives: number.isRequired,
+    flyingObjects: arrayOf(
+      shape({
+        position: shape({
+          x: number.isRequired,
+          y: number.isRequired,
+        }).isRequired,
+        id: number.isRequired,
+      }),
+    ).isRequired,
   }).isRequired,
   startGame: func.isRequired,
   angle: number.isRequired,
