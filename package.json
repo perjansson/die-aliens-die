@@ -18,6 +18,9 @@
 		"redux": "^3.7.2"
 	},
 	"scripts": {
+		"cleanup": "rm -rf node_modules/gh-pages/.cache",
+		"predeploy": "npm run cleanup && npm run build",
+		"deploy": "gh-pages -d build",
 		"start": "react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test --env=jsdom",
