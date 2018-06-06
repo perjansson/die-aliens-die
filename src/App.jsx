@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import { shape, bool, number, func } from 'prop-types'
 
-import { getCanvasMousePosition } from './utils/formulas'
-import Canvas from './components/Canvas'
+import { getCanvasMousePosition } from 'utils/formulas'
+import Canvas from 'components/Canvas'
 
 class App extends Component {
   componentDidMount() {
@@ -26,15 +26,28 @@ class App extends Component {
   }
 
   render() {
+    const { gameState, startGame, angle } = this.props
+
     return (
-      <Canvas angle={this.props.angle} onMouseMove={this.handleMouseMove} />
+      <Canvas
+        gameState={gameState}
+        startGame={startGame}
+        angle={angle}
+        onMouseMove={this.handleMouseMove}
+      />
     )
   }
 }
 
 App.propTypes = {
-  angle: PropTypes.number.isRequired,
-  moveObjects: PropTypes.func.isRequired,
+  gameState: shape({
+    started: bool.isRequired,
+    kills: number.isRequired,
+    lives: number.isRequired,
+  }).isRequired,
+  startGame: func.isRequired,
+  angle: number.isRequired,
+  moveObjects: func.isRequired,
 }
 
 export default App

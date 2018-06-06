@@ -1,13 +1,19 @@
 import { connect } from 'react-redux'
 
-import { moveObjects } from '../actions'
-import App from '../App'
+import { moveObjects, startGame } from 'actions'
+import App from 'App'
 
-const mapStateToProps = state => ({
-  angle: state.angle,
-})
+const mapStateToProps = state => {
+  const { angle, gameState } = state
+
+  return {
+    angle,
+    gameState,
+  }
+}
 
 const mapDispatchToProps = dispatch => ({
+  startGame: () => dispatch(startGame()),
   moveObjects: mousePosition => dispatch(moveObjects(mousePosition)),
 })
 

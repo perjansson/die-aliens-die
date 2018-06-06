@@ -1,5 +1,5 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import { shape, bool, number, func } from 'prop-types'
 
 import { gameHeight } from 'utils/constants'
 import Sky from 'components/Sky'
@@ -12,7 +12,7 @@ import Heart from 'components/Heart'
 import StartGame from 'components/StartGame'
 import Title from 'components/Title'
 
-const Canvas = ({ angle, onMouseMove }) => {
+const Canvas = ({ gameState: { started }, startGame, angle, onMouseMove }) => {
   const viewBox = [
     window.innerWidth / -2,
     100 - gameHeight,
@@ -32,18 +32,32 @@ const Canvas = ({ angle, onMouseMove }) => {
       <Cannon rotation={angle} />
       <CannonBall position={{ x: 0, y: -100 }} />
       <CurrentScore score={15} />
-      <FlyingObject position={{ x: -150, y: -300 }} />
-      <FlyingObject position={{ x: 150, y: -300 }} />
+      {!started && (
+        <g>
+          <StartGame onClick={startGame} />
+        </g>
+      )}
+      {started && (
+        <g>
+          <FlyingObject position={{ x: -150, y: -300 }} />
+          <FlyingObject position={{ x: 150, y: -300 }} />
+        </g>
+      )}
       <Heart position={{ x: -300, y: 35 }} />
-      <StartGame onClick={() => console.log('Die Aliens Die!')} />
       <Title />
     </svg>
   )
 }
 
 Canvas.propTypes = {
-  angle: PropTypes.number.isRequired,
-  onMouseMove: PropTypes.func.isRequired,
+  gameState: shape({
+    started: bool.isRequired,
+    kills: number.isRequired,
+    lives: number.isRequired,
+  }).isRequired,
+  startGame: func.isRequired,
+  angle: number.isRequired,
+  onMouseMove: func.isRequired,
 }
 
 export default Canvas
