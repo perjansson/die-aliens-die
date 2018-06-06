@@ -73,10 +73,19 @@ const reducer = (state = initialState, action) => {
       const mousePosition = payload || { x: 0, y: 0 }
       const newState = createFlyingObjects(state)
 
+      const now = new Date().getTime()
+      const flyingObjects = newState.gameState.flyingObjects.filter(
+        flighingObject => now - flighingObject.createdAt < 4000,
+      )
+
       const { x, y } = mousePosition
       const angle = calculateAngle(0, 0, x, y)
       return {
         ...newState,
+        gameState: {
+          ...newState.gameState,
+          flyingObjects,
+        },
         angle,
       }
     }
