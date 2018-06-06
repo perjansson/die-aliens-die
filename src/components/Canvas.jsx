@@ -1,19 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import { gameHeight } from 'utils/constants'
 import Sky from 'components/Sky'
 import Ground from 'components/Ground'
 import Cannon from 'components/Cannon'
 import CannonBall from 'components/CannonBall'
 import CurrentScore from 'components/CurrentScore'
 import FlyingObject from 'components/FlyingObject'
+import Heart from 'components/Heart'
+import StartGame from 'components/StartGame'
+import Title from 'components/Title'
 
 const Canvas = ({ angle, onMouseMove }) => {
   const viewBox = [
     window.innerWidth / -2,
-    100 - window.innerHeight,
+    100 - gameHeight,
     window.innerWidth,
-    window.innerHeight,
+    gameHeight,
   ]
 
   return (
@@ -30,6 +34,9 @@ const Canvas = ({ angle, onMouseMove }) => {
       <CurrentScore score={15} />
       <FlyingObject position={{ x: -150, y: -300 }} />
       <FlyingObject position={{ x: 150, y: -300 }} />
+      <Heart position={{ x: -300, y: 35 }} />
+      <StartGame onClick={() => console.log('Die Aliens Die!')} />
+      <Title />
     </svg>
   )
 }

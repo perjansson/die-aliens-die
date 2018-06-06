@@ -6,6 +6,7 @@ const FlyingObjectTop = ({ position: { x, y } }) => {
   const style = {
     fill: '#b6b6b6',
     stroke: '#7d7d7d',
+    strokeWidth: '1.5px',
   }
 
   const baseWidth = 40

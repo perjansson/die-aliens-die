@@ -3,7 +3,7 @@ import React from 'react'
 import { skyAndGroundWidth, gameHeight } from '../utils/constants'
 
 const skyStyle = {
-  fill: '#30abef',
+  fill: '#6d9eed',
 }
 
 const skyWidth = skyAndGroundWidth
