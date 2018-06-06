@@ -13,10 +13,11 @@ import StartGame from 'components/StartGame'
 import Title from 'components/Title'
 
 const Canvas = ({
-  gameState: { started, flyingObjects },
+  gameState: { started, flyingObjects, cannonBalls },
   startGame,
   angle,
   onMouseMove,
+  shoot,
 }) => {
   const viewBox = [
     window.innerWidth / -2,
@@ -26,7 +27,12 @@ const Canvas = ({
   ]
 
   return (
-    <svg id="die-aliens-die-canvas" onMouseMove={onMouseMove} viewBox={viewBox}>
+    <svg
+      id="die-aliens-die-canvas"
+      onClick={shoot}
+      onMouseMove={onMouseMove}
+      viewBox={viewBox}
+    >
       <defs>
         <filter id="shadow">
           <feDropShadow dx="1" dy="1" stdDeviation="2" />
@@ -34,9 +40,10 @@ const Canvas = ({
       </defs>
       <Sky />
       <Ground />
+      {cannonBalls.map(cannonBall => (
+        <CannonBall key={cannonBall.id} position={cannonBall.position} />
+      ))}
       <Cannon rotation={angle} />
-      <CannonBall position={{ x: 0, y: -100 }} />
-      <CurrentScore score={15} />
       {!started && (
         <g>
           <StartGame onClick={startGame} />
@@ -47,6 +54,7 @@ const Canvas = ({
           <FlyingObject key={id} position={position} />
         ))}
       <Heart position={{ x: -300, y: 35 }} />
+      <CurrentScore score={15} />
       <Title />
     </svg>
   )
@@ -70,6 +78,7 @@ Canvas.propTypes = {
   startGame: func.isRequired,
   angle: number.isRequired,
   onMouseMove: func.isRequired,
+  shoot: func.isRequired,
 }
 
 export default Canvas

@@ -25,6 +25,10 @@ class App extends Component {
     this.canvasMousePosition = getCanvasMousePosition(event)
   }
 
+  shoot = () => {
+    this.props.shoot(this.canvasMousePosition)
+  }
+
   render() {
     const { gameState, startGame, angle } = this.props
 
@@ -33,6 +37,7 @@ class App extends Component {
         gameState={gameState}
         startGame={startGame}
         angle={angle}
+        shoot={this.shoot}
         onMouseMove={this.handleMouseMove}
       />
     )
@@ -57,6 +62,7 @@ App.propTypes = {
   startGame: func.isRequired,
   angle: number.isRequired,
   moveObjects: func.isRequired,
+  shoot: func.isRequired,
 }
 
 export default App

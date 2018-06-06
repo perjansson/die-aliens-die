@@ -1,5 +1,5 @@
-import { MOVE_OBJECTS, START_GAME } from 'actions'
-import { calculateAngle } from 'utils/formulas'
+import { MOVE_OBJECTS, START_GAME, SHOOT } from 'actions'
+import { calculateAngle, calculateNextPosition } from 'utils/formulas'
 import {
   maxFlyingObjects,
   createInterval,
@@ -11,6 +11,7 @@ const initialGameState = {
   started: false,
   kills: 0,
   lives: 3,
+  cannonBalls: [],
   flyingObjects: [],
   lastObjectCreatedAt: new Date(),
 }
@@ -55,6 +56,53 @@ const createFlyingObjects = state => {
   }
 }
 
+const shoot = (state, action) => {
+  const { payload } = action
+
+  if (!state.gameState.started) {
+    return state
+  }
+
+  const { cannonBalls } = state.gameState
+  if (cannonBalls.length === 2) {
+    return state
+  }
+
+  const { x, y } = payload || { x: 0, y: 0 }
+  const angle = calculateAngle(0, 0, x, y)
+  const id = new Date().getTime()
+  const cannonBall = {
+    position: { x: 0, y: 0 },
+    angle,
+    id,
+  }
+
+  return {
+    ...state,
+    gameState: {
+      ...state.gameState,
+      cannonBalls: [...cannonBalls, cannonBall],
+    },
+  }
+}
+
+const moveBalls = cannonBalls =>
+  cannonBalls
+    .filter(
+      cannonBall =>
+        cannonBall.position.y > -800 &&
+        cannonBall.position.x > -500 &&
+        cannonBall.position.x < 500,
+    )
+    .map(cannonBall => {
+      const { x, y } = cannonBall.position
+      const { angle } = cannonBall
+      return {
+        ...cannonBall,
+        position: calculateNextPosition(x, y, angle, 5),
+      }
+    })
+
 const reducer = (state = initialState, action) => {
   const { type, payload } = action
 
@@ -73,6 +121,8 @@ const reducer = (state = initialState, action) => {
       const mousePosition = payload || { x: 0, y: 0 }
       const newState = createFlyingObjects(state)
 
+      const cannonBalls = moveBalls(state.gameState.cannonBalls)
+
       const now = new Date().getTime()
       const flyingObjects = newState.gameState.flyingObjects.filter(
         flighingObject => now - flighingObject.createdAt < 4000,
@@ -85,10 +135,14 @@ const reducer = (state = initialState, action) => {
         gameState: {
           ...newState.gameState,
           flyingObjects,
+          cannonBalls,
         },
         angle,
       }
     }
+
+    case SHOOT:
+      return shoot(state, action)
 
     default:
       return state
