@@ -13,7 +13,7 @@ import StartGame from 'components/StartGame'
 import Title from 'components/Title'
 
 const Canvas = ({
-  gameState: { started, flyingObjects, cannonBalls, lives },
+  gameState: { started, flyingObjects, cannonBalls, lives, kills },
   startGame,
   angle,
   onMouseMove,
@@ -63,7 +63,7 @@ const Canvas = ({
           <FlyingObject key={id} position={position} />
         ))}
       {hearts}
-      <CurrentScore score={15} />
+      <CurrentScore score={kills} />
       <Title />
     </svg>
   )

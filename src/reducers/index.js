@@ -169,7 +169,7 @@ const moveObjects = (state, action) => {
     lives -= 1
   }
 
-  const started = lives > 0
+  const started = state.gameState.started && lives > 0
   if (!started) {
     flyingObjects = []
     cannonBalls = []
@@ -194,6 +194,8 @@ const moveObjects = (state, action) => {
     flyingDiscsDestroyed.indexOf(cannonBall.id),
   )
 
+  const kills = state.gameState.kills + flyingDiscsDestroyed.length
+
   return {
     ...newState,
     gameState: {
@@ -202,6 +204,7 @@ const moveObjects = (state, action) => {
       cannonBalls: [...cannonBalls],
       lives,
       started,
+      kills,
     },
     angle,
   }
