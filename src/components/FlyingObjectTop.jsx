@@ -1,6 +1,8 @@
 import React from 'react'
 import { shape, number } from 'prop-types'
+
 import { pathFromBezierCurve } from 'utils/formulas'
+import { flyingObjectsBaseWidth } from 'utils/constants'
 
 const FlyingObjectTop = ({ position: { x, y } }) => {
   const style = {
@@ -9,7 +11,7 @@ const FlyingObjectTop = ({ position: { x, y } }) => {
     strokeWidth: '1.5px',
   }
 
-  const baseWidth = 40
+  const baseWidth = flyingObjectsBaseWidth
   const halfBase = baseWidth / 2
   const height = 25
 

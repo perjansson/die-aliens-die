@@ -13,7 +13,7 @@ import StartGame from 'components/StartGame'
 import Title from 'components/Title'
 
 const Canvas = ({
-  gameState: { started, flyingObjects, cannonBalls },
+  gameState: { started, flyingObjects, cannonBalls, lives },
   startGame,
   angle,
   onMouseMove,
@@ -25,6 +25,15 @@ const Canvas = ({
     window.innerWidth,
     gameHeight,
   ]
+
+  const hearts = []
+  for (let i = 0; i < lives; i += 1) {
+    const heartPosition = {
+      x: -180 - i * 70,
+      y: 35,
+    }
+    hearts.push(<Heart key={i} position={heartPosition} />)
+  }
 
   return (
     <svg
@@ -53,7 +62,7 @@ const Canvas = ({
         flyingObjects.map(({ id, position }) => (
           <FlyingObject key={id} position={position} />
         ))}
-      <Heart position={{ x: -300, y: 35 }} />
+      {hearts}
       <CurrentScore score={15} />
       <Title />
     </svg>

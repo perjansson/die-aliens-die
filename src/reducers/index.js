@@ -11,6 +11,7 @@ import {
   flyingObjectsStarterYAxis,
   gameHeight,
   flyingObjectsLifeTime,
+  flyingObjectsBaseWidth,
 } from 'utils/constants'
 
 const initialGameState = {
@@ -122,9 +123,9 @@ const checkCollisions = (cannonBalls, flyingDiscs) => {
     }
 
     const rectA = {
-      x1: calculatedPosition.x - 40,
+      x1: calculatedPosition.x - flyingObjectsBaseWidth,
       y1: calculatedPosition.y - 10,
-      x2: calculatedPosition.x + 40,
+      x2: calculatedPosition.x + flyingObjectsBaseWidth,
       y2: calculatedPosition.y + 10,
     }
 
@@ -162,6 +163,19 @@ const moveObjects = (state, action) => {
     flighingObject => now - flighingObject.createdAt < flyingObjectsLifeTime,
   )
 
+  const lostLife = state.gameState.flyingObjects.length > flyingObjects.length
+  let { lives } = state.gameState
+  if (lostLife) {
+    lives -= 1
+  }
+
+  const started = lives > 0
+  if (!started) {
+    flyingObjects = []
+    cannonBalls = []
+    lives = 3
+  }
+
   const { x, y } = mousePosition
   const angle = calculateAngle(0, 0, x, y)
 
@@ -185,7 +199,9 @@ const moveObjects = (state, action) => {
     gameState: {
       ...newState.gameState,
       flyingObjects,
-      cannonBalls,
+      cannonBalls: [...cannonBalls],
+      lives,
+      started,
     },
     angle,
   }
