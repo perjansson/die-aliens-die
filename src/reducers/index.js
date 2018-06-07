@@ -1,10 +1,16 @@
 import { MOVE_OBJECTS, START_GAME, SHOOT } from 'actions'
-import { calculateAngle, calculateNextPosition } from 'utils/formulas'
+import {
+  calculateAngle,
+  calculateNextPosition,
+  checkCollision,
+} from 'utils/formulas'
 import {
   maxFlyingObjects,
   createInterval,
   flyingObjectsStarterPositions,
   flyingObjectsStarterYAxis,
+  gameHeight,
+  flyingObjectsLifeTime,
 } from 'utils/constants'
 
 const initialGameState = {
@@ -103,42 +109,106 @@ const moveBalls = cannonBalls =>
       }
     })
 
+const checkCollisions = (cannonBalls, flyingDiscs) => {
+  const objectsDestroyed = []
+
+  flyingDiscs.forEach(flyingDisc => {
+    const currentLifeTime = new Date().getTime() - flyingDisc.createdAt
+    const calculatedPosition = {
+      x: flyingDisc.position.x,
+      y:
+        flyingDisc.position.y +
+        currentLifeTime / flyingObjectsLifeTime * gameHeight,
+    }
+
+    const rectA = {
+      x1: calculatedPosition.x - 40,
+      y1: calculatedPosition.y - 10,
+      x2: calculatedPosition.x + 40,
+      y2: calculatedPosition.y + 10,
+    }
+
+    cannonBalls.forEach(cannonBall => {
+      const { position } = cannonBall
+      const rectB = {
+        x1: position.x - 8,
+        y1: position.y - 8,
+        x2: position.x + 8,
+        y2: position.y + 8,
+      }
+
+      const isCollision = checkCollision(rectA, rectB)
+      if (isCollision) {
+        objectsDestroyed.push({
+          cannonBallId: cannonBall.id,
+          flyingDiscId: flyingDisc.id,
+        })
+      }
+    })
+  })
+
+  return objectsDestroyed
+}
+
+const moveObjects = (state, action) => {
+  const { payload } = action
+  const mousePosition = payload || { x: 0, y: 0 }
+  const newState = createFlyingObjects(state)
+
+  let cannonBalls = moveBalls(state.gameState.cannonBalls)
+
+  const now = new Date().getTime()
+  let flyingObjects = newState.gameState.flyingObjects.filter(
+    flighingObject => now - flighingObject.createdAt < flyingObjectsLifeTime,
+  )
+
+  const { x, y } = mousePosition
+  const angle = calculateAngle(0, 0, x, y)
+
+  const objectsDestroyed = checkCollisions(cannonBalls, flyingObjects)
+  const cannonBallsDestroyed = objectsDestroyed.map(
+    object => object.cannonBallId,
+  )
+  const flyingDiscsDestroyed = objectsDestroyed.map(
+    object => object.flyingDiscId,
+  )
+
+  cannonBalls = cannonBalls.filter(cannonBall =>
+    cannonBallsDestroyed.indexOf(cannonBall.id),
+  )
+  flyingObjects = flyingObjects.filter(cannonBall =>
+    flyingDiscsDestroyed.indexOf(cannonBall.id),
+  )
+
+  return {
+    ...newState,
+    gameState: {
+      ...newState.gameState,
+      flyingObjects,
+      cannonBalls,
+    },
+    angle,
+  }
+}
+
+const startGame = state => ({
+  ...state,
+  gameState: {
+    ...initialGameState,
+    started: true,
+  },
+})
+
 const reducer = (state = initialState, action) => {
-  const { type, payload } = action
+  const { type } = action
 
   switch (type) {
     case START_GAME: {
-      return {
-        ...state,
-        gameState: {
-          ...initialGameState,
-          started: true,
-        },
-      }
+      return startGame(state, action)
     }
 
     case MOVE_OBJECTS: {
-      const mousePosition = payload || { x: 0, y: 0 }
-      const newState = createFlyingObjects(state)
-
-      const cannonBalls = moveBalls(state.gameState.cannonBalls)
-
-      const now = new Date().getTime()
-      const flyingObjects = newState.gameState.flyingObjects.filter(
-        flighingObject => now - flighingObject.createdAt < 4000,
-      )
-
-      const { x, y } = mousePosition
-      const angle = calculateAngle(0, 0, x, y)
-      return {
-        ...newState,
-        gameState: {
-          ...newState.gameState,
-          flyingObjects,
-          cannonBalls,
-        },
-        angle,
-      }
+      return moveObjects(state, action)
     }
 
     case SHOOT:
